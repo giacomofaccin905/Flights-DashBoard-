@@ -1,4 +1,6 @@
-streamlit
-plotly
-pandas
-numpy
+streamlit>=1.25
+plotly>=5.20
+pandas>=2.1
+numpy>=1.27
+folium>=0.17
+pyreadr>=0.4.5
