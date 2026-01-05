@@ -37,28 +37,34 @@ df = load_flight()
 
 #####################################################################################################
 
-@st.cache_data(ttl=60)
+@st.cache_data(ttl=60, show_spinner=False)
 
 def get_live_flight():
     url= "https://opensky-network.org/api/states/all"
+
+    response = requests.get(
+            url,
+            auth=(st.secrets["OPENSKY_USER"], st.secrets["OPENSKY_PASS"]),
+            timeout=10
+        )
+        
+    
     try:
         response = requests.get(
             url,
-            timeout=8,
-            headers={"User-Agent": "Mozilla/5.0"}
-        )
+            auth=(st.secrets["OPENSKY_USER"], st.secrets["OPENSKY_PASS"]),
+            timeout=10
+        ) 
         response.raise_for_status()
         data= response.json()
-    except requests.exceptions.Timeout:
-        st.warning("⏳ OpenSky non risponde (timeout)")
-        return pd.DataFrame()
 
+        if "states" not in data or data["states"] is None:
+            return pd.DataFrame()
+        
     except requests.exceptions.RequestException as e:
-        st.error("❌ Errore API OpenSky")
-        st.caption(str(e))
-        return pd.DataFrame()
+        st.warning("Live flight data not available")
+        return pd.DataFrame()    
     
-
     columns = ["icao24", "callsign", "origin_country", "time_position",
         "last_contact", "longitude", "latitude", "baro_altitude",
         "on_ground", "velocity", "heading", "vertical_rate",
