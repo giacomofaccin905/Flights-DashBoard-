@@ -40,15 +40,7 @@ df = load_flight()
 @st.cache_data(ttl=60, show_spinner=False)
 
 def get_live_flight():
-    url= "https://opensky-network.org/api/states/all"
-
-    response = requests.get(
-            url,
-            auth=(st.secrets["OPENSKY_USER"], st.secrets["OPENSKY_PASS"]),
-            timeout=10
-        )
-        
-    
+    url= "https://opensky-network.org/api/states/all"    
     try:
         response = requests.get(
             url,
