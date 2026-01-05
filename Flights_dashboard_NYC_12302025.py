@@ -39,8 +39,13 @@ df = load_flight()
 
 @st.cache_data(ttl=60, show_spinner=False)
 
+
 def get_live_flight():
-    url= "https://opensky-network.org/api/states/all"    
+    url= ("https://opensky-network.org/api/states/all?"
+    "lamin=24.396308&lomin=-125.0&"
+    "lamax=49.384358&lomax=-66.93457" 
+    )
+      
     try:
         response = requests.get(
             url,
@@ -67,6 +72,10 @@ def get_live_flight():
     return df_live
 
 live_flights = get_live_flight()
+
+
+
+
 
 REQUIRED_COLS = {"latitude", "longitude"}
 
