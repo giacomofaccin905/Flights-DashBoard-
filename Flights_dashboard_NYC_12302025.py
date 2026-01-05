@@ -41,8 +41,23 @@ df = load_flight()
 
 def get_live_flight():
     url= "https://opensky-network.org/api/states/all"
-    response =  requests.get(url)
-    data= response.json()
+    try:
+        response = requests.get(
+            url,
+            timeout=8,
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+        response.raise_for_status()
+        data= response.json()
+    except requests.exceptions.Timeout:
+        st.warning("⏳ OpenSky non risponde (timeout)")
+        return pd.DataFrame()
+
+    except requests.exceptions.RequestException as e:
+        st.error("❌ Errore API OpenSky")
+        st.caption(str(e))
+        return pd.DataFrame()
+    
 
     columns = ["icao24", "callsign", "origin_country", "time_position",
         "last_contact", "longitude", "latitude", "baro_altitude",
@@ -60,7 +75,7 @@ live_flights = get_live_flight()
 col1,col2,col3=st.columns(3)
 col1.metric("Ongoing flighs",len(live_flights))
 col2.metric("Average delay", round(df["arr_delay"].mean(), 2))
-col3.metric(" persentage Flights delay ", f"{round((df['arr_delay'] > 15).mean()*100, 1)} %")
+col3.metric(" Persentage Flights delay ", f"{round((df['arr_delay'] > 15).mean()*100, 1)} %")
 
 ## MAPPA INTERATTIVA
 
