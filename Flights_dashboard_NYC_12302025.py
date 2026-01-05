@@ -76,6 +76,12 @@ def get_live_flight():
 
 live_flights = get_live_flight()
 
+REQUIRED_COLS = {"latitude", "longitude"}
+
+if live_flights.empty or not REQUIRED_COLS.issubset(live_flights.columns):
+    st.info("✈️ Live flight data temporarily unavailable")
+    live_flights = pd.DataFrame(columns=["latitude", "longitude"])
+
 #############################################################################################################
 
 col1,col2,col3=st.columns(3)
